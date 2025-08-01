@@ -172,6 +172,65 @@ User 도메인은 UserService에 의존적이게 됩니다. (스스로 패스워
 - 실제 도메인 영역인 UserService는 IUserRepository를 의존하여 의존성을 역전시킴
 → 영속성 레이어가 변경되어도 해당 인터페이스에 맞게 개발된다면 도메인영역에선 변경점이 생기지않음
 
+### 빈약한 도메인 모델
+
+```jsx
+// 도메인 객체
+public class Account {
+    private double balance;
+    // getters and setters ...
+}
+
+// 서비스 계층
+public class AccountService {
+    public void transfer(Account source, Account target, double amount) {
+        if (source.getBalance() < amount) {
+            throw new InsufficientFundsException();
+        }
+        source.setBalance(source.getBalance() - amount);
+        target.setBalance(target.getBalance() + amount);
+    }
+}
+출처: https://sunrise-min.tistory.com/entry/빈약한-도메인-모델Anemic-Domain-Model [내가 보기 위한 기록:티스토리]
+```
+
+### 풍부한 도메인 모델
+
+```jsx
+// 도메인 객체
+public class Account {
+    private double balance;
+
+    public void debit(double amount) {
+        if (this.balance < amount) {
+            throw new InsufficientFundsException();
+        }
+        this.balance -= amount;
+    }
+
+    public void credit(double amount) {
+        this.balance += amount;
+    }
+
+    // getters and setters ...
+}
+
+// 서비스 계층
+public class AccountService {
+    public void transfer(Account source, Account target, double amount) {
+        source.debit(amount);
+        target.credit(amount);
+    }
+}
+출처: https://sunrise-min.tistory.com/entry/빈약한-도메인-모델Anemic-Domain-Model [내가 보기 위한 기록:티스토리]
+```
+
+### 빈약한 도메인 모델이 안티패턴인 이유
+
+- 객체는 상태와 행위를 가질 수 있는데, 빈약한 도메인 모델에서는 행위가 객체 외부에 있기때문에 
+객체지향의 장점과 특성을 활용 할 수없음
+- 서비스 계층에 분산되어 있으면 비슷한 로직이 여러 서비스에서 중복될 수 있음
+
 ## 헥사고날 아키텍처 선택 이유
 
 ### 계층형 아키텍처에서는 도메인 코드와 영속성 코드의 분리가 어렵다.
