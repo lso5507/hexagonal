@@ -2,7 +2,7 @@ package com.example.hexagonal.domain.port
 
 import com.example.hexagonal.domain.User
 
-interface UserOutport {
+interface UserOutPort {
     fun findUsers(id:Long):User
     fun saveUser(user: User): Boolean
     fun deleteUser(id:Long): Boolean

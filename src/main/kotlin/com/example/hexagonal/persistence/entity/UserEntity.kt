@@ -12,6 +12,7 @@ import jakarta.persistence.Table
 class UserEntity(
     @Column
     @Id
+    @GeneratedValue
     val id: Long,
 
 ) {
