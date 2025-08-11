@@ -9,9 +9,7 @@ class BoardEntity(
     val id: Long = 0L,
 ) {
     init{
-        id?.let {
-             require(it >= 0) {"id must be greater than or equal to zero"}
-         }
+        require(id >= 0) {"id must be greater than or equal to zero"}
     }
     @Column(nullable = false, length = 20)
     lateinit var title: String
