@@ -8,8 +8,8 @@ val UserEntity.toDomain: User
         name = this.name?:"",
         age = this.age?:0
     )
-fun User.toEntity(id:Long): UserEntity=
-    UserEntity(id).apply{
+fun User.toEntity(): UserEntity=
+    UserEntity().apply{
         name=this@toEntity.name
         age=this@toEntity.age
     }

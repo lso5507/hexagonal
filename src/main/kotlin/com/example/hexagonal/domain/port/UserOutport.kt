@@ -4,7 +4,7 @@ import com.example.hexagonal.domain.User
 
 interface UserOutPort {
     fun findUsers(id:Long):User
-    fun saveUser(user: User): Boolean
-    fun deleteUser(id:Long): Boolean
-    fun updateUser(user:User): Boolean
+    fun saveUser(user: User): User
+    fun deleteUser(id:Long)
+    fun updateUser(user:User)
 }

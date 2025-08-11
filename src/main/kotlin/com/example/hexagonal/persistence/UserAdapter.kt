@@ -14,18 +14,20 @@ import org.springframework.transaction.annotation.Transactional
 class UserAdapter: UserOutPort {
     @Autowired
     lateinit var userRepository: UserRepository
-    override fun findUsers(id: Long): User =userRepository.findById(id).isPresent.let {
-        userRepository.findById(id).get().toDomain
+    override fun findUsers(id: Long): User =userRepository.findById(id).orElseThrow(
+        {NoSuchElementException("User with id $id not found")}
+    ).toDomain
+
+
+    override fun saveUser(user: User): User = userRepository.save(user.toEntity()).toDomain
+
+    override fun deleteUser(id: Long)  {
+        userRepository.deleteById(id)
     }
 
-
-    override fun saveUser(user: User): Boolean = userRepository.save(user.toEntity(1L)) != null
-
-    override fun deleteUser(id: Long): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateUser(user: User): Boolean {
-        TODO("Not yet implemented")
+    override fun updateUser(user: User) {
+        userRepository.findById(user.id!!).get().let {
+            it.name = user.name
+        }
     }
 }
