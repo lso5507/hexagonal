@@ -7,11 +7,11 @@ import jakarta.validation.constraints.NotNull
 data class BoardDto(
     val id: Long,
     val title: String,
-    val content: Int,
+    val content: String,
 ){
 
 }
-data class createBoardDto(
+data class CreateBoardDto(
     @NotBlank
     val title:String,
     @NotBlank

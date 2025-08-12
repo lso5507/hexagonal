@@ -20,8 +20,8 @@ class BoardAdapter:BoardOutPort {
             .orElseThrow { NoSuchElementException("Board with id $id not found") }
     }
 
-    override fun createBoard(board: Board) {
-        boardRepository.save(board.toEntity())
+    override fun createBoard(board: Board): Board {
+        return boardRepository.save(board.toEntity()).toDomain
     }
 
     override fun modifyBoard(board: Board) {
