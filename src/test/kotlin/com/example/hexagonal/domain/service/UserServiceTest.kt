@@ -2,63 +2,108 @@ package com.example.hexagonal.domain.service
 
 import com.example.hexagonal.BaseTest
 import com.example.hexagonal.domain.User
-import com.example.hexagonal.domain.port.dto.ModifyDto
-import com.example.hexagonal.domain.port.dto.SignupDto
-import org.aspectj.lang.annotation.Before
+import com.example.hexagonal.domain.port.dto.UserCreateRequest // Changed import
+import com.example.hexagonal.domain.port.dto.UserUpdateRequest // Changed import
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
 
 class UserServiceTest: BaseTest() {
     @Autowired
     lateinit var userService: UserService
     lateinit var user: User
+
     @BeforeEach
     fun init(){
         user = initUser()
+        entityManager.flush()
+        entityManager.clear()
     }
-    @Test
-    fun findUsers() {
-        //given
-        //when
-        val findUsers = userService.findUsers(user.id!!)
-        //then
-        assertEquals(findUsers.id,user.id!!)
+
+    @Nested
+    @DisplayName("Find User Scenarios")
+    inner class FindUserTests {
+        @Test
+        @DisplayName("Should find a user by ID and return correct data")
+        fun findUsers() {
+            // when
+            val findUser = userService.findUsers(user.id!!)
+            // then
+            assertEquals(user.id, findUser.id)
+            assertEquals(user.name, findUser.name)
+            assertEquals(user.email, findUser.email) // Changed from age to email
+        }
+
+        @Test
+        @DisplayName("Should throw NoSuchElementException when user not found")
+        fun findUser_notFound() {
+            // given
+            val nonExistentId = 9999L
+            // when & then
+            assertThrows(NoSuchElementException::class.java) {
+                userService.findUsers(nonExistentId)
+            }
+        }
     }
 
     @Test
+    @DisplayName("Should create a new user successfully")
     fun createUser() {
-        //given
-        //when
-        //then
-        assertDoesNotThrow {  userService.createUser(SignupDto(name = "test", age = 10))}
+        // given
+        val userCreateRequest = UserCreateRequest(name = "newUser", email = "newuser@example.com") // Changed DTO and fields
+        
+        // when
+        val createdUserDto = userService.createUser(userCreateRequest)
+        entityManager.flush()
+        entityManager.clear()
+
+        // then
+        assertNotNull(createdUserDto.id)
+        assertEquals(userCreateRequest.name, createdUserDto.name)
+        assertEquals(userCreateRequest.email, createdUserDto.email) // Changed from age to email
+
+        val findUser = userService.findUsers(createdUserDto.id!!)
+        assertEquals(createdUserDto.name, findUser.name)
+        assertEquals(createdUserDto.email, findUser.email) // Added email assertion
     }
 
     @Test
+    @DisplayName("Should update an existing user's name")
     fun updateUser() {
-        //given
-        //when
-        userService.updateUser(ModifyDto(id = 1L, name = "modify"))
+        // given
+        val newName = "modified"
+        val newEmail = "modified@example.com"
+        val userUpdateRequest = UserUpdateRequest(id = user.id!!, name = newName, email = newEmail) // Changed DTO and fields
+        
+        // when
+        userService.updateUser(userUpdateRequest)
         entityManager.flush()
         entityManager.clear()
-        val findUsers = userService.findUsers(1L)
-        //then
-        assertEquals(findUsers.name,"modify")
-
+        
+        // then
+        val updatedUser = userService.findUsers(user.id!!)
+        assertEquals(newName, updatedUser.name)
+        assertEquals(newEmail, updatedUser.email) // Added email assertion
     }
 
     @Test
+    @DisplayName("Should delete an existing user")
     fun deleteUser() {
-        //given
-        //when
-        userService.deleteUser(1L)
+        // given
+        val userId = user.id!!
+        assertDoesNotThrow { userService.findUsers(userId) } // Verify user exists
+
+        // when
+        userService.deleteUser(userId)
         entityManager.flush()
         entityManager.clear()
-        assertThrows(NoSuchElementException::class.java){ userService.findUsers(1L)}
 
+        // then
+        assertThrows(NoSuchElementException::class.java) {
+            userService.findUsers(userId)
+        }
     }
-
 }

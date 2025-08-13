@@ -27,9 +27,12 @@ dependencies {
     implementation("com.h2database:h2")
     // https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    implementation("org.hibernate.validator:hibernate-validator") // Added Hibernate Validator
+    implementation("org.springframework.boot:spring-boot-starter-validation") // Added Spring Boot Validation Starter
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("com.h2database:h2")
+    testImplementation("io.mockk:mockk:1.12.0") // Added MockK dependency
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
