@@ -10,19 +10,22 @@ class BoardAssembler {
         fun toCreate(createBoardDto: CreateBoardDto):Board=
             Board(
                 title = createBoardDto.title,
-                content = createBoardDto.content
+                content = createBoardDto.content,
+                userId = createBoardDto.userId // Added userId
             )
         fun toModify(modifyBoardDto: ModifyBoardDto):Board=
             Board(
                 id = modifyBoardDto.id,
                 title = modifyBoardDto.title,
-                content = modifyBoardDto.content
+                content = modifyBoardDto.content,
+                userId = modifyBoardDto.userId // Added userId
             )
         fun from(board: Board): BoardDto {
             return BoardDto(
                 id = board.id!!,
                 title = board.title,
-                content = board.content
+                content = board.content,
+                userId = board.userId // Added userId
             )
         }
     }
