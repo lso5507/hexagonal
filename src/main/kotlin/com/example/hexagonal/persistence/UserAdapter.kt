@@ -19,7 +19,12 @@ class UserAdapter: UserOutPort {
     ).toDomain
 
 
-    override fun saveUser(user: User): User = userRepository.save(user.toEntity()).toDomain
+    override fun saveUser(user: User): User {
+        val userEntity = user.toEntity()
+        val savedEntity = userRepository.save(userEntity)
+        val domainUser = savedEntity.toDomain
+        return domainUser
+    }
 
     override fun deleteUser(id: Long)  {
         userRepository.deleteById(id)

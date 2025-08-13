@@ -1,31 +1,32 @@
 package com.example.hexagonal.domain.port
 
 import com.example.hexagonal.domain.User
-import com.example.hexagonal.domain.port.dto.ModifyDto
-import com.example.hexagonal.domain.port.dto.SignupDto
-import com.example.hexagonal.domain.port.dto.UserDto
+import com.example.hexagonal.domain.port.dto.UserCreateRequest // Changed import
+import com.example.hexagonal.domain.port.dto.UserUpdateRequest // Changed import
+import com.example.hexagonal.domain.port.dto.UserResponse // Changed import
 
 class UserAssembler {
     companion object{
-        fun toCreate(signupDto: SignupDto): User{
+        fun toCreate(userCreateRequest: UserCreateRequest): User{ // Changed parameter type
             return User(
-                id=null,
-                name = signupDto.name,
-                age=signupDto.age
+                name = userCreateRequest.name,
+                email = userCreateRequest.email
             )
         }
-        fun toUpdate(modifyDto: ModifyDto): User{
+        fun toUpdate(userUpdateRequest: UserUpdateRequest): User{ // Changed parameter type
             return User(
-                id=modifyDto.id,
-                name = modifyDto.name,
-                age=-1
+                id = userUpdateRequest.id, // Assuming id is passed in UserUpdateRequest
+                name = userUpdateRequest.name,
+                email = userUpdateRequest.email
             )
         }
-        fun from(user: User): UserDto{
-            return UserDto(
+        fun from(user: User): UserResponse{ // Changed return type
+            return UserResponse(
                 id = user.id!!,
                 name = user.name,
-                age = user.age
+                email = user.email,
+                createdAt = user.createdAt!!,
+                updatedAt = user.updatedAt!!
             )
         }
     }

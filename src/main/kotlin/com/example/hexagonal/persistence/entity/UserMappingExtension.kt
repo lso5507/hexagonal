@@ -1,15 +1,23 @@
 package com.example.hexagonal.persistence.entity
 
 import com.example.hexagonal.domain.User
+import java.time.LocalDateTime // Added import
 
 val UserEntity.toDomain: User
     get() = User(
         id = this.id,
-        name = this.name?:"",
-        age = this.age?:0
+        name = this.name?:
+"",
+        email = this.email?:
+"",
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
     )
 fun User.toEntity(): UserEntity=
-    UserEntity().apply{
-        name=this@toEntity.name
-        age=this@toEntity.age
-    }
+    UserEntity(
+        id = this.id, // Pass nullable id directly
+        name = this.name,
+        email = this.email,
+        createdAt = this.createdAt ?: LocalDateTime.now(),
+        updatedAt = this.updatedAt ?: LocalDateTime.now()
+    )
