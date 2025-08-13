@@ -1,17 +1,22 @@
 package com.example.hexagonal.persistence.entity
 
 import com.example.hexagonal.domain.Board
+import com.example.hexagonal.domain.User // Added import for User
 
 
 val BoardEntity.toDomain:Board
     get() = Board(
         id = this@toDomain.id,
         title = this@toDomain.title,
-        content = this@toDomain.content
+        content = this@toDomain.content,
+        userId = this@toDomain.user.id!! // Added userId
     )
 
-fun Board.toEntity(): BoardEntity =
-    BoardEntity().apply {
-        title = this@toEntity.title
-        content = this@toEntity.content
-    }
+// Modified to accept UserEntity for the relationship
+fun Board.toEntity(userEntity: UserEntity): BoardEntity =
+    BoardEntity(
+        id = this.id,
+        title = this.title,
+        content = this.content,
+        user = userEntity
+    )

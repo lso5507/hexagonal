@@ -1,21 +1,29 @@
 package com.example.hexagonal.persistence.entity
 
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
+@Table(name = "board")
 class BoardEntity(
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    val id: Long = 0L,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    var title: String,
+
+    var content: String,
+
+    @ManyToOne(fetch = FetchType.LAZY) // Added ManyToOne relationship
+    @JoinColumn(name = "user_id", nullable = false) // Added JoinColumn
+    var user: UserEntity, // Made mutable for JPA
+
+    @Column(name = "created_at")
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "updated_at")
+    var updatedAt: LocalDateTime = LocalDateTime.now()
 ) {
-    init{
-        require(id >= 0) {"id must be greater than or equal to zero"}
-    }
-    @Column(nullable = false, length = 20)
-    lateinit var title: String
-    @Column(nullable = false, length = 1000)
-    lateinit var content: String
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    lateinit var user: UserEntity
+    // No-arg constructor for JPA
+    protected constructor() : this(null, "", "", UserEntity(), LocalDateTime.now(), LocalDateTime.now())
 }

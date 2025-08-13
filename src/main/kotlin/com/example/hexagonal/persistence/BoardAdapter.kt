@@ -1,40 +1,48 @@
 package com.example.hexagonal.persistence
 
 import com.example.hexagonal.domain.Board
-import com.example.hexagonal.domain.port.BoardOutPort
+import com.example.hexagonal.domain.port.BoardOutport // Added import
+import com.example.hexagonal.persistence.entity.BoardEntity
 import com.example.hexagonal.persistence.entity.toDomain
 import com.example.hexagonal.persistence.entity.toEntity
 import com.example.hexagonal.persistence.repository.BoardRepository
-import org.springframework.beans.factory.annotation.Autowired
+import com.example.hexagonal.persistence.repository.UserRepository // Added UserRepository import
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
 @Component
-@Transactional
-class BoardAdapter:BoardOutPort {
-    @Autowired
-    lateinit var boardRepository: BoardRepository
-    override fun selectBoard(id: Long): Board {
-        return boardRepository.findById(id)
-            .map { it.toDomain }
-            .orElseThrow { NoSuchElementException("Board with id $id not found") }
+class BoardAdapter(
+    private val boardRepository: BoardRepository,
+    private val userRepository: UserRepository // Injected UserRepository
+) : BoardOutport {
+    override fun saveBoard(board: Board): Board {
+        val userEntity = userRepository.findByIdOrNull(board.userId)
+            ?: throw IllegalArgumentException("User not found with ID: ${board.userId}") // Fetch UserEntity
+        val boardEntity = board.toEntity(userEntity) // Pass UserEntity to toEntity
+        return boardRepository.save(boardEntity).toDomain
     }
 
-    override fun createBoard(board: Board): Board {
-        return boardRepository.save(board.toEntity()).toDomain
+    override fun findBoardById(boardId: Long): Board? {
+        return boardRepository.findByIdOrNull(boardId)?.toDomain
     }
 
-    override fun modifyBoard(board: Board) {
-        boardRepository.findById(board.id!!).get().let {
-            it.title = board.title
-            it.content = board.content
-        }
+    override fun deleteBoard(boardId: Long) {
+        boardRepository.deleteById(boardId)
     }
 
-    override fun deleteBoard(id: Long) {
-        //@TODO 세션 유저가 Board 도메인 작성자 유저인지 유효성검사필요
-        boardRepository.deleteById(id)
+    // Assuming updateBoard will be called from BoardService
+    override fun updateBoard(board: Board): Board {
+        val existingBoardEntity = boardRepository.findByIdOrNull(board.id!!)
+            ?: throw IllegalArgumentException("Board not found with ID: ${board.id}")
+
+        val userEntity = userRepository.findByIdOrNull(board.userId)
+            ?: throw IllegalArgumentException("User not found with ID: ${board.userId}")
+
+        existingBoardEntity.title = board.title
+        existingBoardEntity.content = board.content
+        existingBoardEntity.user = userEntity // Update user
+        // createdAt is val, updatedAt is var and will be updated by JPA automatically or can be set manually
+
+        return boardRepository.save(existingBoardEntity).toDomain
     }
-
-
 }
