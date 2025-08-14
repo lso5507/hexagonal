@@ -15,25 +15,25 @@ class BoardService(
     private val boardOutport: BoardOutport
 ) : BoardInPort {
     override fun createBoard(createBoardDto: CreateBoardDto): BoardDto {
-        val board = createBoardDto.toDomain()
-        return BoardDto.fromDomain(boardOutport.saveBoard(board))
+        return createBoardDto.toDomain().let{
+            BoardDto.fromDomain(boardOutport.saveBoard(it))
+        }
     }
 
     override fun getBoard(boardId: Long): BoardDto {
-        val board = boardOutport.findBoardById(boardId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found") // Changed exception
-        return BoardDto.fromDomain(board)
+        return boardOutport.findBoardById(boardId)?.let(BoardDto::fromDomain)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
     }
 
     override fun updateBoard(boardId: Long, modifyBoardDto: ModifyBoardDto): BoardDto {
-        val existingBoard = boardOutport.findBoardById(boardId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found") // Changed exception
+        return boardOutport.findBoardById(boardId)?.let{
+            if (it.userId != modifyBoardDto.userId)
+                throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID mismatch. You can only modify your own board.")
 
-        // User ID validation
-        if (existingBoard.userId != modifyBoardDto.userId) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID mismatch. You can only modify your own board.")
-        }
-
-        val updatedBoard = modifyBoardDto.toDomain().copy(id = boardId) // Ensure ID is set for update
-        return BoardDto.fromDomain(boardOutport.updateBoard(updatedBoard)) // Changed to updateBoard
+            modifyBoardDto.toDomain().copy(id = boardId).let{
+                BoardDto.fromDomain(boardOutport.updateBoard(it))
+            }
+        }?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
     }
 
     override fun deleteBoard(boardId: Long) {
