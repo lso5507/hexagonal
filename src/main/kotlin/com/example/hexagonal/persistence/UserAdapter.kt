@@ -33,6 +33,7 @@ class UserAdapter: UserOutPort {
     override fun updateUser(user: User) {
         userRepository.findById(user.id!!).get().let {
             it.name = user.name
+            it.email = user.email
         }
     }
 }

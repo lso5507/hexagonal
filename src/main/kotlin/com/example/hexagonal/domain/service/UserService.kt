@@ -13,18 +13,19 @@ class UserService(
     private val userOutport: UserOutPort
 ) : UserInPort {
     override fun findUsers(id: Long): UserResponse { // Changed function name and return type
-        val user = userOutport.findUsers(id) ?: throw RuntimeException("User not found") // Changed to findUsers
-        return UserAssembler.from(user) // Changed to from
+        return userOutport.findUsers(id).let { UserAssembler.from(it) }
     }
 
     override fun createUser(userCreateRequest: UserCreateRequest): UserResponse { // Changed parameter and return type
-        val user = UserAssembler.toCreate(userCreateRequest) // Changed to toCreate
-        return UserAssembler.from(userOutport.saveUser(user)) // Changed to from
+        return UserAssembler.toCreate(userCreateRequest).let{
+            UserAssembler.from(userOutport.saveUser(it))
+        }
     }
 
     override fun updateUser(userUpdateRequest: UserUpdateRequest) { // Changed parameter and return type
-        val user = UserAssembler.toUpdate(userUpdateRequest) // Changed to toUpdate
-        userOutport.saveUser(user) // No return type for updateUser in UserInPort
+        UserAssembler.toUpdate(userUpdateRequest).let{
+            userOutport.updateUser(it)
+        }
     }
 
     override fun deleteUser(id: Long) { // Changed parameter name
