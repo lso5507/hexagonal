@@ -11,32 +11,32 @@ import org.springframework.web.server.ResponseStatusException // Import Response
 
 @Service
 class BoardService(
-    private val boardOutport: BoardOutPort
+    private val boardOutPort: BoardOutPort
 ) : BoardInPort {
     override fun createBoard(createBoardDto: CreateBoardDto): BoardDto {
         return createBoardDto.toDomain().let{
-            BoardDto.fromDomain(boardOutport.saveBoard(it))
+            BoardDto.fromDomain(boardOutPort.saveBoard(it))
         }
     }
 
     override fun getBoard(boardId: Long): BoardDto {
-        return boardOutport.findBoardById(boardId)?.let(BoardDto::fromDomain)
+        return boardOutPort.findBoardById(boardId)?.let(BoardDto::fromDomain)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
     }
 
     override fun updateBoard(boardId: Long, modifyBoardDto: ModifyBoardDto): BoardDto {
-        return boardOutport.findBoardById(boardId)?.let{
+        return boardOutPort.findBoardById(boardId)?.let{
             if (it.userId != modifyBoardDto.userId)
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User ID mismatch. You can only modify your own board.")
 
             modifyBoardDto.toDomain().copy(id = boardId).let{
-                BoardDto.fromDomain(boardOutport.updateBoard(it))
+                BoardDto.fromDomain(boardOutPort.updateBoard(it))
             }
         }?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
     }
 
     override fun deleteBoard(boardId: Long) {
-        boardOutport.findBoardById(boardId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
-        boardOutport.deleteBoard(boardId)
+        boardOutPort.findBoardById(boardId) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Board not found")
+        boardOutPort.deleteBoard(boardId)
     }
 }
