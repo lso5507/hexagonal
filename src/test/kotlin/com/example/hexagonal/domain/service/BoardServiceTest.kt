@@ -1,8 +1,7 @@
 package com.example.hexagonal.domain.service
 
 import com.example.hexagonal.domain.Board
-import com.example.hexagonal.domain.port.BoardOutport
-import com.example.hexagonal.domain.port.dto.BoardDto
+import com.example.hexagonal.domain.port.BoardOutPort
 import com.example.hexagonal.domain.port.dto.CreateBoardDto
 import com.example.hexagonal.domain.port.dto.ModifyBoardDto
 import io.mockk.every
@@ -19,7 +18,7 @@ import java.time.LocalDateTime
 
 class BoardServiceTest {
 
-    private lateinit var boardOutport: BoardOutport
+    private lateinit var boardOutport: BoardOutPort
     private lateinit var boardService: BoardService
 
     @BeforeEach

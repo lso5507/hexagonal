@@ -1,8 +1,7 @@
 package com.example.hexagonal.persistence
 
 import com.example.hexagonal.domain.Board
-import com.example.hexagonal.domain.port.BoardOutport // Added import
-import com.example.hexagonal.persistence.entity.BoardEntity
+import com.example.hexagonal.domain.port.BoardOutPort // Added import
 import com.example.hexagonal.persistence.entity.toDomain
 import com.example.hexagonal.persistence.entity.toEntity
 import com.example.hexagonal.persistence.repository.BoardRepository
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component
 class BoardAdapter(
     private val boardRepository: BoardRepository,
     private val userRepository: UserRepository // Injected UserRepository
-) : BoardOutport {
+) : BoardOutPort {
     override fun saveBoard(board: Board): Board {
         val userEntity = userRepository.findByIdOrNull(board.userId)
             ?: throw IllegalArgumentException("User not found with ID: ${board.userId}") // Fetch UserEntity

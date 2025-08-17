@@ -1,8 +1,7 @@
 package com.example.hexagonal.domain.service
 
-import com.example.hexagonal.domain.Board
 import com.example.hexagonal.domain.port.BoardInPort
-import com.example.hexagonal.domain.port.BoardOutport
+import com.example.hexagonal.domain.port.BoardOutPort
 import com.example.hexagonal.domain.port.dto.BoardDto
 import com.example.hexagonal.domain.port.dto.CreateBoardDto
 import com.example.hexagonal.domain.port.dto.ModifyBoardDto
@@ -12,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException // Import Response
 
 @Service
 class BoardService(
-    private val boardOutport: BoardOutport
+    private val boardOutport: BoardOutPort
 ) : BoardInPort {
     override fun createBoard(createBoardDto: CreateBoardDto): BoardDto {
         return createBoardDto.toDomain().let{
