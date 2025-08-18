@@ -18,7 +18,7 @@ class BoardAssembler {
                 id = modifyBoardDto.id,
                 title = modifyBoardDto.title,
                 content = modifyBoardDto.content,
-                userId = modifyBoardDto.userId // Added userId
+                userId = 0L // Dummy value, will be set in service layer
             )
         fun from(board: Board): BoardDto {
             return BoardDto(

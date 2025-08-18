@@ -49,16 +49,14 @@ data class ModifyBoardDto(
     val title:String,
     @field:NotNull // Added @field:NotNull
     @field:NotBlank // Added @field:NotBlank
-    val content:String,
-    @field:NotNull // Added @field:NotNull for userId
-    val userId: Long // Added userId
+    val content:String
 ) {
     fun toDomain(): Board { // Added toDomain method
         return Board(
             id = this.id,
             title = this.title,
             content = this.content,
-            userId = this.userId
+            userId = 0 // Will be ignored, but required by Board constructor
         )
     }
 }

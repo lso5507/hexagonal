@@ -8,6 +8,6 @@ import com.example.hexagonal.domain.port.dto.CreateBoardDto
 interface BoardInPort {
     fun getBoard(boardId: Long): BoardDto // Changed name and parameter
     fun createBoard(createBoardDto: CreateBoardDto): BoardDto // Changed return type
-    fun updateBoard(boardId: Long, modifyBoardDto: ModifyBoardDto): BoardDto // Changed name and parameters
-    fun deleteBoard(boardId: Long) // Changed parameter name
+    fun updateBoard(boardId: Long, modifyBoardDto: ModifyBoardDto, authenticatedUserEmail: String): BoardDto // Changed name and parameters
+    fun deleteBoard(boardId: Long, authenticatedUserEmail: String) // Changed parameter name
 }
