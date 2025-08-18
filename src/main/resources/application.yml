@@ -16,3 +16,7 @@ spring:
   h2:
     console:
       enabled: true
+
+jwt:
+  secret: V29vTmVvQ29kaW5nSGV4YWdvbmFsQXJjaGl0ZWN0dXJlUHJvamVjdFR1dG9yaWFsU3ByaW5nQm9vdA==
+  access-token-validity-in-seconds: 3600

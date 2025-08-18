@@ -33,6 +33,17 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("com.h2database:h2")
     testImplementation("io.mockk:mockk:1.12.0") // Added MockK dependency
+    testImplementation("org.springframework.security:spring-security-test")
+
+    // jwt
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
+
+    // security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
