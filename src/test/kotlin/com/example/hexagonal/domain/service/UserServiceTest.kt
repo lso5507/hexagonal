@@ -53,7 +53,7 @@ class UserServiceTest: BaseTest() {
     @DisplayName("Should create a new user successfully")
     fun createUser() {
         // given
-        val userCreateRequest = UserCreateRequest(name = "newUser", email = "newuser@example.com") // Changed DTO and fields
+        val userCreateRequest = UserCreateRequest(name = "newUser", email = "newuser@example.com", password = "password") // Changed DTO and fields
         
         // when
         val createdUserDto = userService.createUser(userCreateRequest)
@@ -89,21 +89,38 @@ class UserServiceTest: BaseTest() {
         assertEquals(newEmail, updatedUser.email) // Added email assertion
     }
 
-    @Test
-    @DisplayName("Should delete an existing user")
-    fun deleteUser() {
-        // given
-        val userId = user.id!!
-        assertDoesNotThrow { userService.findUsers(userId) } // Verify user exists
+    @Nested
+    @DisplayName("Delete User Scenarios")
+    inner class DeleteUserTests {
+        @Test
+        @DisplayName("Should delete an existing user")
+        fun deleteUser_success() {
+            // given
+            val userId = user.id!!
+            assertDoesNotThrow { userService.findUsers(userId) } // Verify user exists
 
-        // when
-        userService.deleteUser(userId)
-        entityManager.flush()
-        entityManager.clear()
+            // when
+            userService.deleteUser(userId, user.email)
+            entityManager.flush()
+            entityManager.clear()
 
-        // then
-        assertThrows(NoSuchElementException::class.java) {
-            userService.findUsers(userId)
+            // then
+            assertThrows(NoSuchElementException::class.java) {
+                userService.findUsers(userId)
+            }
+        }
+
+        @Test
+        @DisplayName("Should throw AccessDeniedException when deleting another user")
+        fun deleteUser_accessDenied() {
+            // given
+            val anotherUser = userAdapter.saveUser(User(name = "another", email = "another@example.com", password = "password"))
+            val userIdToDelete = user.id!!
+
+            // when & then
+            assertThrows(org.springframework.security.access.AccessDeniedException::class.java) {
+                userService.deleteUser(userIdToDelete, anotherUser.email)
+            }
         }
     }
 }

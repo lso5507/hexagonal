@@ -22,7 +22,7 @@ class BaseTest {
     @Autowired
     lateinit var boardAdapter: BoardAdapter
     fun initUser(): User {
-        return userAdapter.saveUser(User(name = "test", email = "test@example.com")) // Updated User constructor
+        return userAdapter.saveUser(User(name = "test", email = "test@example.com", password = "password")) // Updated User constructor
     }
     fun initBoard(userId: Long): Board {
         return boardAdapter.saveBoard(Board(title="test", content = "content", userId = userId)) // Updated Board constructor and method name
