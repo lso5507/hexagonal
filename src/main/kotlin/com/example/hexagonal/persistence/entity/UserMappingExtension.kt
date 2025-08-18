@@ -10,6 +10,8 @@ val UserEntity.toDomain: User
 "",
         email = this.email?:
 "",
+        password = this.password,
+        roles = this.roles.split(',').toMutableList(),
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
     )
@@ -18,6 +20,8 @@ fun User.toEntity(): UserEntity=
         id = this.id, // Pass nullable id directly
         name = this.name,
         email = this.email,
+        password = this.password,
+        roles = this.roles.joinToString(","),
         createdAt = this.createdAt ?: LocalDateTime.now(),
         updatedAt = this.updatedAt ?: LocalDateTime.now()
     )

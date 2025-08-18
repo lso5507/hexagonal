@@ -7,4 +7,5 @@ interface UserOutPort {
     fun saveUser(user: User): User
     fun deleteUser(id:Long)
     fun updateUser(user:User)
+    fun findByEmail(email: String): User?
 }

@@ -5,12 +5,14 @@ import java.time.LocalDateTime
 
 data class UserCreateRequest(
     val name: String,
-    val email: String
+    val email: String,
+    val password: String
 ) {
     fun toDomain(): User {
         return User(
             name = this.name,
-            email = this.email
+            email = this.email,
+            password = this.password
         )
     }
 }
@@ -18,13 +20,15 @@ data class UserCreateRequest(
 data class UserUpdateRequest(
     val id: Long, // Added id
     val name: String,
-    val email: String
+    val email: String,
+    val password: String? = null
 ) {
     fun toDomain(): User { // Removed id parameter as it's now part of the DTO
         return User(
             id = this.id,
             name = this.name,
-            email = this.email
+            email = this.email,
+            password = this.password ?: ""
         )
     }
 }

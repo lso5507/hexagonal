@@ -36,4 +36,8 @@ class UserAdapter: UserOutPort {
             it.email = user.email
         }
     }
+
+    override fun findByEmail(email: String): User? {
+        return userRepository.findByEmail(email)?.toDomain
+    }
 }

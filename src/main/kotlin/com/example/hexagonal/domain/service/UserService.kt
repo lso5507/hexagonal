@@ -1,34 +1,41 @@
 package com.example.hexagonal.domain.service
 
+import com.example.hexagonal.domain.port.PasswordEncoderPort
 import com.example.hexagonal.domain.port.UserAssembler
 import com.example.hexagonal.domain.port.UserInPort
-import com.example.hexagonal.domain.port.UserOutPort // Added import
-import com.example.hexagonal.domain.port.dto.UserCreateRequest // Changed import
-import com.example.hexagonal.domain.port.dto.UserUpdateRequest // Changed import
-import com.example.hexagonal.domain.port.dto.UserResponse // Changed import
+import com.example.hexagonal.domain.port.UserOutPort
+import com.example.hexagonal.domain.port.dto.UserCreateRequest
+import com.example.hexagonal.domain.port.dto.UserResponse
+import com.example.hexagonal.domain.port.dto.UserUpdateRequest
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val userOutport: UserOutPort
+    private val userOutport: UserOutPort,
+    private val passwordEncoderPort: PasswordEncoderPort
 ) : UserInPort {
-    override fun findUsers(id: Long): UserResponse { // Changed function name and return type
+    override fun findUsers(id: Long): UserResponse {
         return userOutport.findUsers(id).let { UserAssembler.from(it) }
     }
 
-    override fun createUser(userCreateRequest: UserCreateRequest): UserResponse { // Changed parameter and return type
-        return UserAssembler.toCreate(userCreateRequest).let{
-            UserAssembler.from(userOutport.saveUser(it))
-        }
+    override fun createUser(userCreateRequest: UserCreateRequest): UserResponse {
+        val user = UserAssembler.toCreate(userCreateRequest)
+        user.password = passwordEncoderPort.encode(user.password)
+        return UserAssembler.from(userOutport.saveUser(user))
     }
 
-    override fun updateUser(userUpdateRequest: UserUpdateRequest) { // Changed parameter and return type
+    override fun updateUser(userUpdateRequest: UserUpdateRequest) {
         UserAssembler.toUpdate(userUpdateRequest).let{
             userOutport.updateUser(it)
         }
     }
 
-    override fun deleteUser(id: Long) { // Changed parameter name
-        userOutport.deleteUser(id)
+    override fun deleteUser(userIdToDelete: Long, authenticatedUserEmail: String) {
+        val userToDelete = userOutport.findUsers(userIdToDelete)
+        if (userToDelete.email != authenticatedUserEmail) {
+            throw AccessDeniedException("You do not have permission to delete this user.")
+        }
+        userOutport.deleteUser(userIdToDelete)
     }
 }

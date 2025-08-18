@@ -21,6 +21,12 @@ class UserEntity(
     @Column(length = 255) // Explicitly set length for email
     var email: String? = "",
 
+    @Column(length = 255)
+    var password: String = "",
+
+    @Column
+    var roles: String = "USER",
+
     @Column(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now(),
 
@@ -28,5 +34,5 @@ class UserEntity(
     var updatedAt: LocalDateTime = LocalDateTime.now()
 ) {
     // No-arg constructor for JPA
-    protected constructor() : this(null, "", null, LocalDateTime.now(), LocalDateTime.now()) // Updated no-arg constructor for nullable id
+    protected constructor() : this(null, "", "", "", "USER", LocalDateTime.now(), LocalDateTime.now())
 }
