@@ -10,14 +10,16 @@ class UserAssembler {
         fun toCreate(userCreateRequest: UserCreateRequest): User{ // Changed parameter type
             return User(
                 name = userCreateRequest.name,
-                email = userCreateRequest.email
+                email = userCreateRequest.email,
+                password = userCreateRequest.password
             )
         }
         fun toUpdate(userUpdateRequest: UserUpdateRequest): User{ // Changed parameter type
             return User(
                 id = userUpdateRequest.id, // Assuming id is passed in UserUpdateRequest
                 name = userUpdateRequest.name,
-                email = userUpdateRequest.email
+                email = userUpdateRequest.email,
+                password = userUpdateRequest.password ?: ""
             )
         }
         fun from(user: User): UserResponse{ // Changed return type
